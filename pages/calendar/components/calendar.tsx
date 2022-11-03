@@ -1,21 +1,48 @@
-import { FunctionComponent } from "react";
+import {
+  FunctionComponent,
+  MutableRefObject,
+  useEffect,
+} from "react";
 
-type Props = {
-  children?: JSX.Element;
+type LayoutProps = {
+  children: JSX.Element;
 };
 
-export const Calendar: FunctionComponent<Props> = ({ children }) => {
+type CalendarProps = {
+  children: JSX.Element;
+  setHeight: (height: number) => void;
+  heightRef: MutableRefObject<HTMLDivElement>;
+};
+
+export const Layout: FunctionComponent<LayoutProps> = ({ children }) => {
   return (
-    <div className="flex h-full flex-col m-4 sm:m-16">
+    <div className="flex max-h-screen flex-col m-4 sm:m-16">
       <h1 className="ml-12 my-8 text-2xl font-bold">2nd November 2022</h1>
-      <div className="isolate flex flex-auto overflow-hidden bg-white">
-        <div className="flex w-full flex-auto">
-          <div className="w-14 flex-none bg-white ring-1 ring-gray-100" />
-          <div className="grid flex-auto grid-cols-1 grid-rows-1">
-            <HourRows />
-            {children}
-          </div>
-        </div>
+      {children}
+    </div>
+  );
+};
+
+export const Calendar: FunctionComponent<CalendarProps> = ({
+  setHeight,
+  heightRef,
+  children,
+}) => {
+  useEffect(() => {
+    if (heightRef?.current) {
+      setHeight(heightRef.current.clientHeight);
+    }
+  }, [heightRef]);
+
+  return (
+    <div className="flex flex-auto bg-white">
+      <div className="w-14 flex-none bg-white border-r ring-gray-100" />
+      <div
+        ref={heightRef}
+        className="grid w-full grid-cols-1 grid-rows-1"
+      >
+        <HourRows />
+        {children}
       </div>
     </div>
   );
@@ -56,11 +83,9 @@ export const HourRows = () => {
       <div ref={null} className="row-end-1 h-7"></div>
       {HOURS.map((hour) => (
         <>
-          <div>
             <div className="sticky left-0 -mt-2.5 -ml-14 w-14 pr-2 text-right text-xs leading-5 text-gray-400">
               {hour}
             </div>
-          </div>
           <div />
         </>
       ))}
