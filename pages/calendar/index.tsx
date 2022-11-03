@@ -1,5 +1,7 @@
 import useSWR from "swr";
-import { Event } from "../types/resolvers-types";
+import { Event } from "../../types/resolvers-types";
+import { Calendar } from "./components/calendar";
+import { Events } from "./components/events";
 
 const fetcher = (query: string) =>
   fetch("/api/graphql", {
@@ -22,18 +24,10 @@ export default function CalendarPage() {
   if (!data) return <div>Loading...</div>;
 
   const { events } = data;
-    console.log(events)
+
   return (
-    <div>
-      {events.map((event) => (
-        <>
-          <div>{event.title}</div>
-          <div>
-            {event.start} - {event.end}
-          </div>
-          <hr />
-        </>
-      ))}
-    </div>
+    <Calendar>
+      <Events events={events} />
+    </Calendar>
   );
 }
