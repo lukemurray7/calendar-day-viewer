@@ -1,5 +1,6 @@
 import { FunctionComponent, useEffect, useState } from "react";
 import { Event } from "../../../types/resolvers-types";
+import { getGroupedEvents } from "../../../utils";
 
 type EventsProps = {
   events: Event[];
@@ -68,8 +69,10 @@ const EventGroup: FunctionComponent<EventGroupProps> = ({
         const eventHeight = (event.end - event.start) * heightUnitsPerMinute;
         const eventMarginTop =
           (event.start - groupEventStartTime) * heightUnitsPerMinute;
+
         return (
           <EventComponent
+            key={event.id}
             event={event}
             height={eventHeight}
             marginTop={eventMarginTop}
@@ -87,40 +90,7 @@ export const Events: FunctionComponent<EventsProps> = ({
   const [eventGroups, setEventGroups] = useState<Event[][]>([]);
 
   useEffect(() => {
-    // group events into overlapping groups
-    const isOverlappingEvent = (
-      start: number,
-      end: number,
-      nextEventStart: number
-    ) => {
-      return nextEventStart >= start && nextEventStart < end;
-    };
-
-    const grouped = events.reduce(
-      (groupedEvents: Event[][], nextEvent: Event) => {
-        let nextEventAdded = false;
-
-        const newGroupedEvents = groupedEvents.map((group) => {
-          let newGroup = [...group];
-          group.forEach((event) => {
-            if (isOverlappingEvent(nextEvent.start, event.start, event.end)) {
-              nextEventAdded = true;
-              newGroup = [...group, nextEvent];
-            }
-          });
-          return newGroup;
-        });
-
-        if (!nextEventAdded) {
-          return [...newGroupedEvents, [nextEvent]];
-        }
-
-        return newGroupedEvents;
-      },
-      []
-    );
-
-    setEventGroups(grouped);
+    setEventGroups(getGroupedEvents(events));
   }, [events]);
 
   const heightUnitsPerMinute = height / MINUTES_PER_DAY;
