@@ -39,7 +39,6 @@ describe("Get Grouped Events", () => {
       [events[4], events[5], events[6]],
     ];
 
-    console.log(getGroupedEvents(events))
     expect(getGroupedEvents(events)).toEqual(expected);
   });
 });
