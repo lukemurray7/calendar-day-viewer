@@ -9,7 +9,7 @@ type EventsProps = {
 
 type EventGroupProps = {
   events: Event[];
-  heightUnitsPerMinute: number;
+  heightPixelUnitsPerMinute: number;
 };
 
 const MINUTES_PER_DAY = 1440;
@@ -40,7 +40,7 @@ const EventComponent: FunctionComponent<EventProps> = ({
           border
         `}
       >
-        <p className="order-1 font-semibold text-blue-700">{title}</p>
+        <p className="font-semibold text-blue-700">{title}</p>
       </a>
     </div>
   );
@@ -48,27 +48,27 @@ const EventComponent: FunctionComponent<EventProps> = ({
 
 const EventGroup: FunctionComponent<EventGroupProps> = ({
   events,
-  heightUnitsPerMinute,
+  heightPixelUnitsPerMinute,
 }) => {
   const groupEventStartTime = events
     .map((event) => event.start)
     .sort((a, b) => a - b)[0];
 
   const groupMarginTopHeight = Math.round(
-    groupEventStartTime * heightUnitsPerMinute
+    groupEventStartTime * heightPixelUnitsPerMinute
   );
 
   return (
     <div
-      className="absolute leading-5 overflow-scroll w-full flex flex-row"
+      className="absolute w-full flex flex-row"
       style={{
         marginTop: groupMarginTopHeight,
       }}
     >
       {events.map((event) => {
-        const eventHeight = (event.end - event.start) * heightUnitsPerMinute;
+        const eventHeight = (event.end - event.start) * heightPixelUnitsPerMinute;
         const eventMarginTop =
-          (event.start - groupEventStartTime) * heightUnitsPerMinute;
+          (event.start - groupEventStartTime) * heightPixelUnitsPerMinute;
 
         return (
           <EventComponent
@@ -87,13 +87,8 @@ export const Events: FunctionComponent<EventsProps> = ({
   events,
   height,
 }) => {
-  const [eventGroups, setEventGroups] = useState<Event[][]>([]);
-
-  useEffect(() => {
-    setEventGroups(getGroupedEvents(events));
-  }, [events]);
-
-  const heightUnitsPerMinute = height / MINUTES_PER_DAY;
+  const heightPixelUnitsPerMinute = height / MINUTES_PER_DAY;
+  const eventGroups = getGroupedEvents(events);
 
   return (
     <div className="col-start-1 col-end-2 row-start-1 relative pt-2.5">
@@ -102,7 +97,7 @@ export const Events: FunctionComponent<EventsProps> = ({
           <EventGroup
             key={group[0].start}
             events={group}
-            heightUnitsPerMinute={heightUnitsPerMinute}
+            heightPixelUnitsPerMinute={heightPixelUnitsPerMinute}
           />
         );
       })}

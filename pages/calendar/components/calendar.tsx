@@ -18,7 +18,7 @@ type CalendarProps = {
 export const Layout: FunctionComponent<LayoutProps> = ({ children }) => {
   return (
     <div className="flex max-h-screen flex-col m-4 sm:m-16">
-      <h1 className="ml-12 my-8 text-2xl font-bold">2nd November 2022</h1>
+      <h1 className="ml-12 my-8 text-2xl font-bold">3rd November 2022</h1>
       {children}
     </div>
   );
@@ -84,7 +84,7 @@ export const HourRows = () => {
       <div ref={null} className="row-end-1 h-7"></div>
       {HOURS.map((hour) => (
         <Fragment key={hour}>
-            <div className="sticky left-0 -mt-2.5 -ml-14 w-14 pr-2 text-right text-xs leading-5 text-gray-400">
+            <div className="left-0 -mt-2.5 -ml-14 w-14 pr-2 text-right text-xs text-gray-400">
               {hour}
             </div>
           <div />

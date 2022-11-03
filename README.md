@@ -1,54 +1,53 @@
 # Pace gets organised 📅
 
-Thank you for taking the time to interview with Pace! We have a coding exercise we would like you to do to show us your skills, and give us something to talk about in our technical interview.
+## Running the app
 
-## Expectations
+`npm install`
 
-The exercise was designed to be solvable in an afternoon, yet a robust and comprehensive solution could take much longer. Rather than building a complete solution, please constrain yourself to around **three hours**, and use a shortup writeup to mention anything not achieved or any known limitations.
+`npm run dev`
 
-## Requirements
+To test:
+`npm run test`
 
-![Example](./example.png)
-
-We would like to build a simple day view for a calendar, populated with data from a graphql API. The API returns a list of events which have a start and end time in minutes since midnight. So 9am is 540 minutes, 9.30 is 570 minutes and so on.
-
-When rendering the calendar:
-
-- Events should be shown without any overlapping
-- If multiple events collide, then they should have equal width
-- Styling can be kept extremely simple
-- We only need to display the events
-
-Your submission should also be reflective of how you would write production quality code, but don't fret if you run out of time - we aren't expecting polished solutions.
+To generate graphql schema types
+`npm run generate`
 
 ## Writeup
+Overall a fairly straightforward but fun task. It took me some time to think about how to structure the event data but i'd say most of the time I took on this task was spent on CSS and styling.
 
-Written communication and thoughtful self-reflection is an important part of our work. This is an opportunity for you to tell us a bit more about the work you did. The writeup shouldn’t be long, but we will use it as part of the evaluation and discuss it in subsequent interview, so you should spend a bit of time and focus on it.
+### What choices did you make and why?
+First thing I did was to add types generated from the GraphQL schema using the @graphql-codegen library. I find this useful as you can easily type the response from the api request and have events typed throughout the app.
 
-Here are some example questions your writeup could address:
+Next I added TailwindCSS for styling - I like using tailwind especially for apps like this because it's super easy to setup, and removes a lot of the boilerplate needed for other libraries. Although it was hard to do everything I needed with tailwind so I had to pass in some inline styles to certain components (mainly when dynamically calculating height/margin of calendar events).
 
-- What choices did you make and why?
-- What challenges did you face?
-- What tradeoffs did you choose?
-- What do you like and not like about your solution?
-- What areas would you work on next?
+For testing, because the UI is not interactive, I didn't use react testing library and simply opted for Jest to test the function that groups events together. This is really the only complex bit of logic throughout the app. Typically I would take a more TDD driven approach and use frameworks like react testing library and mock service worker (API mocking) but given the time constraint I opted to just test any complex logic.
 
-We love feedback. If there’s anything you think could be improved with this exercise, please share your thoughts in the writeup, too.
+The architecture of the app is quite simple, to render the calendar I use a grid, with 48 rows (each 2 rows = 1 hour). Then to calculate where the events appear, first I create a data structure which groups overlapping events together. So I have an array of `EventGroups`, where each `EventGroup` is an array of events. 
 
-## Technologies
+I then calculate the height of the calendar based on whatever device is rendering it using a react reference to the element. From the height I can represent the pixel height of 1 minute, and based on that I know where the events will go on the calendar using margin and height css props.
 
-We've gotten you started using a [next.js](https://nextjs.org/) boilerplate including sample data. If you're not familar with the framework then no problem, we don't use any of its additional features here or require server-side rendering. To complete the requirements:
 
-- You may use any open source, publicly available third party libraries or components you would like **except calendar components like [fullcalendar](https://fullcalendar.io/)**.
-- You may use any testing framework or approach you prefer, or not write tests at all.
+### What challenges did you face?
+The hardest parts where creating the data structure that allows for event grouping. My solution will work for any number of overlapping events. Then creating the CSS to place events correctly was difficult. I first attempted to use css grid to place the elements and got it working, but I found it hard to read and it had some unintended consequences like changing the row height on the calendar. So I refactored to just use absolutely positioned divs with margin and height, and this worked better.
 
-## Deliverables
+### What tradeoffs did you choose?
+I think the main thing I wanted to do was finish the task in the given time (or close to it). So as I mentioned I would normally think about things a little differently and write tests as I go, rather than just trying to come up with a solution and then test after the fact. 
 
-We expect you to deliver:
+Using Tailwind is nice for a quick solution, but it can quickly lead to unnecessary classes being added which can pollute the JSX code.
 
-1. Source code of a web app that fulfils, as far as possible, the above requirements and uses the specified technologies, delivered in form of a Git repository. The Repository can be public or private, on GitHub, GitLab or BitBucket, CodeSandboxed, or zipped and emailed to us.
-2. A short writeup of your work in form of a Markdown readme in the project.
+### What do you like and not like about your solution?
+The Good:
+* I like the end result and that I managed to complete the task in just over 3 hours
+* I like my css grid calendar view
 
-Good Luck and have fun!
+The Bad:
+* I think I would like to think a bit more about other possible data structures/patterns to group the events, it works, but it's not the most readable and understandable code. 
+* Some of the CSS classes are just sort of thrown in there, it could definitely do with some cleaning up and refactoring.
 
-Once completed, please email your solution to ben@pacerevenue.com. If you have any questions, please let us know!
+### What areas would you work on next?
+
+I'd like to add more robust testing. It would be good to test that the events are actually rendered in the correct place on the grid. I think this might be difficult to do - but I think possible by setting a fixed height and working out what the margin/height should be based on that. 
+
+### Feedback
+
+I think the task was fun and made me think about certain things. But i'd say the majority of the time was thinking about styling and CSS. I think for a fullstack role it would be better to have some backend part of the test, adding a graphQL mutation or something like this. And the frontend I think should test more "React" things - like using hooks, re-rendering, state management etc.. Then I could utilise things like TDD and other best practices.
