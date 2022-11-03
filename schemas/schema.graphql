@@ -1,0 +1,10 @@
+type Event {
+  id: ID!
+  title: String!
+  start: Int!
+  end: Int!
+}
+
+type Query {
+  events: [Event!]!
+}
